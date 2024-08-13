@@ -36,9 +36,9 @@ for D in $datasets; do
     python scripts/fast_detect_gpt.py --reference_model_name $M --scoring_model_name $M --dataset $D \
                           --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
 
-    echo `date`, Evaluating baseline methods on ${D}_${M} ...
-    python scripts/baselines.py --scoring_model_name $M --dataset $D \
-                          --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
+    # echo `date`, Evaluating baseline methods on ${D}_${M} ...
+    # python scripts/baselines.py --scoring_model_name $M --dataset $D \
+    #                       --dataset_file $data_path/${D}_${M} --output_file $res_path/${D}_${M}
   done
 done
 
