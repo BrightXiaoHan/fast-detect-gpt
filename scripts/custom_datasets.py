@@ -5,7 +5,7 @@ import datasets
 SEPARATOR = '<<<SEP>>>'
 
 
-DATASETS = ['writing', 'english', 'german', 'pubmed']
+DATASETS = ['writing', 'english', 'german', 'pubmed', "hc3_chinese"]
 
 def load_dataset(path, name=None, split=None, cache_dir=None):
     # use local model if it exists
@@ -21,6 +21,21 @@ def load_pubmed(cache_dir):
     data = [f'Question: {q} Answer:{SEPARATOR}{a}' for q, a in zip(data['question'], data['long_answer'])]
 
     return data
+
+
+def load_hc3_chinese(cache_dir):
+    d = datasets.load_dataset(
+        "Hello-SimpleAI/HC3-Chinese",
+        "all",
+        split="train",
+        cache_dir=cache_dir,
+        trust_remote_code=True,
+    )
+    docs = d["human_answers"]
+    docs = [doc[0] for doc in docs if doc[0]]
+    lens = [len(d) // 2 for d in docs]
+    sub = [doc for doc, l in zip(docs, lens) if l > 100 and l < 150]
+    return sub
 
 
 def process_prompt(prompt):
