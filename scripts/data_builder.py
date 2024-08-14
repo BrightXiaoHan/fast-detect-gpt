@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 import time
+import jieba
 
 import numpy as np
 import datasets
@@ -14,6 +15,24 @@ import json
 import custom_datasets
 from model import load_tokenizer, load_model
 
+LANGUAGE_CODES = os.environ.get("DATASETS_LANGUAGE_CODES", "en")
+
+def split_text(text, spliter=" "):
+    if LANGUAGE_CODES == "en":
+        return text.split()
+    elif LANGUAGE_CODES == "zh":
+        tokens = []
+        for segment in re.split(zh_chars, text):
+            if zh_chars.match(segment):
+                tokens.extend(jieba.lcut(segment))
+            else:
+                tokens.extend(segment.split())
+
+        return tokens
+    else:
+        raise ValueError(f"Unknown language codes {LANGUAGE_CODES}")
+
+str.split = split_text
 
 def save_data(output_file, args, data):
     # write args to file
