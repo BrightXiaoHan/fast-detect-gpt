@@ -8,6 +8,7 @@
 echo `date`, Setup the environment ...
 set -e  # exit if error
 
+export DATASETS_LANGUAGE_CODES="zh"
 # prepare folders
 exp_path=exp_main_Chinese
 data_path=$exp_path/data
