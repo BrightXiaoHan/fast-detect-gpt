@@ -17,6 +17,7 @@ import custom_datasets
 from model import load_tokenizer, load_model
 
 LANGUAGE_CODES = os.environ.get("DATASETS_LANGUAGE_CODES", "en")
+zh_chars = re.compile(r"([\u4e00-\u9fa5])")
 
 def split_text(text, spliter=" "):
     if LANGUAGE_CODES == "en":
