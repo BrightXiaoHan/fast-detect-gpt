@@ -32,8 +32,6 @@ def split_text(text, spliter=" "):
     else:
         raise ValueError(f"Unknown language codes {LANGUAGE_CODES}")
 
-str.split = split_text
-
 def save_data(output_file, args, data):
     # write args to file
     args_file = f"{output_file}.args.json"
@@ -64,7 +62,7 @@ class DataBuilder:
 
     def _openai_sample(self, prefix):
         def _drop_last_word(text):
-            return ' '.join(text.split(' ')[:-1])
+            return ' '.join(split_text(text, ' ')[:-1])
 
         import openai
         assert self.args.openai_key is not None, "Must provide OpenAI API key as --openai_key"
@@ -150,7 +148,7 @@ class DataBuilder:
                     print(f"min words: {m}, needed {min_words}, regenerating (try {tries})")
                     prefixes = self.base_tokenizer.batch_decode(all_encoded['input_ids'], skip_special_tokens=True)
                     for prefix, x in zip(prefixes, decoded):
-                        if len(x.split()) == m:
+                        if len(split_text(x)) == m:
                             print(prefix, '=>', x)
 
                 sampling_kwargs = {}
@@ -165,7 +163,7 @@ class DataBuilder:
                                                    **sampling_kwargs, pad_token_id=self.base_tokenizer.eos_token_id,
                                                    eos_token_id=self.base_tokenizer.eos_token_id)
                 decoded = self.base_tokenizer.batch_decode(outputs, skip_special_tokens=True)
-                m = min(len(x.split()) for x in decoded)
+                m = min(len(split_text(x)) for x in decoded)
                 tries += 1
 
         return decoded
@@ -174,9 +172,9 @@ class DataBuilder:
         # trim to shorter length
         def _trim_to_shorter_length(texta, textb):
             # truncate to shorter of o and s
-            shorter_length = min(len(texta.split(' ')), len(textb.split(' ')))
-            texta = ' '.join(texta.split(' ')[:shorter_length])
-            textb = ' '.join(textb.split(' ')[:shorter_length])
+            shorter_length = min(len(split_text(text_a, ' ')), len(split_text(text_b, ' ')))
+            texta = ' '.join(split_text(text_a, ' ')[:shorter_length])
+            textb = ' '.join(split_text(text_b, ' ')[:shorter_length])
             return texta, textb
 
         def _truncate_to_substring(text, substring, idx_occurrence):
@@ -215,7 +213,7 @@ class DataBuilder:
 def generate_data(args, dataset, key):
     # strip newlines from each example; replace one or more newlines with a single space
     def _strip_newlines(text):
-        return ' '.join(text.split())
+        return ' '.join(split_text(text))
 
     # load data
     if dataset in custom_datasets.DATASETS:
@@ -239,7 +237,7 @@ def generate_data(args, dataset, key):
 
     # try to keep only examples with > 250 words
     if dataset in ['writing', 'squad', 'xsum']:
-        long_data = [x for x in data if len(x.split()) > 250]
+        long_data = [x for x in data if len(split_text(x)) > 250]
         if len(long_data) > 0:
             data = long_data
 
@@ -254,7 +252,7 @@ def generate_data(args, dataset, key):
 
     # print stats about remaining data
     print(f"Total number of samples: {len(data)}")
-    print(f"Average number of words: {np.mean([len(x.split()) for x in data])}")
+    print(f"Average number of words: {np.mean([len(split_text(x)) for x in data])}")
 
     return data_builder.generate_samples(data[:args.n_samples], batch_size=args.batch_size)
 
