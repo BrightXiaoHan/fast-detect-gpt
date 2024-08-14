@@ -174,9 +174,9 @@ class DataBuilder:
         # trim to shorter length
         def _trim_to_shorter_length(texta, textb):
             # truncate to shorter of o and s
-            shorter_length = min(len(split_text(text_a, ' ')), len(split_text(text_b, ' ')))
-            texta = ' '.join(split_text(text_a, ' ')[:shorter_length])
-            textb = ' '.join(split_text(text_b, ' ')[:shorter_length])
+            shorter_length = min(len(split_text(texta, ' ')), len(split_text(textb, ' ')))
+            texta = ' '.join(split_text(texta, ' ')[:shorter_length])
+            textb = ' '.join(split_text(textb, ' ')[:shorter_length])
             return texta, textb
 
         def _truncate_to_substring(text, substring, idx_occurrence):
